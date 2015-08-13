@@ -16,14 +16,23 @@ class Trainer extends Database
         return $this->db->get()->row_array();
     }
 
-    public function getTrainerEducation($trainerId)
+    public function getTrainerEducation($trainerId,$flag)
     {
-
-    	$this->db->select('count(*) as count,trainer_education.type')->from('trainers')
+        if($flag == 1)
+        {
+    	$this->db->select('trainer_education.type,count(*) as count')->from('trainers')
              ->join('trainer_education','trainer_education.trainer_id = trainers.trainer_id')
              ->where(array('trainer_education.trainer_id' => $trainerId))
              ->group_by('trainer_education.type');
-      
+      }
+      else
+      {
+        $this->db->select('*')->from('trainers')
+             ->join('trainer_education','trainer_education.trainer_id = trainers.trainer_id')
+             ->where(array('trainer_education.trainer_id' => $trainerId))
+             ->group_by('trainer_education.type');
+
+      }
         return $this->getResultArray($this->db->get());
     }
     public function getTrainerExperience($trainerId)
@@ -45,6 +54,14 @@ class Trainer extends Database
               return $this->getResultArray($this->db->get());
     }
 
+    public function getTrainerReview($trainerId)
+    {
+        $this->db->select('*')->from('trainer_review')
+             ->where(array('trainer_id' => $trainerId));
+
+        return $this->getResultArray($this->db->get());
+
+    }
 
 }
 

@@ -8,6 +8,7 @@ class Main extends MY_Controller
         $this->load->model('user', 'User');
         //$this->load->model('location', 'Location');
         $this->load->model('trainer', 'Trainer');
+        $this->load->model('user_type', 'User_type');
         $this->output->enable_profiler(true);
        // $this->data['active_main_locations'] = $this->Location->getAllLocations();
     }
@@ -33,24 +34,16 @@ class Main extends MY_Controller
         $this->data['userDetails'] = array();
         if (!empty($userName))
         {
-            $this->data['userDetails'] = $this->User->getUserDataByUserName($userName);
-            if (!empty($this->data['userDetails']))
+            $type = $this->User_type->user($userName);
+            if($type['user_type'] == 1)
             {
-                $userLocationInfo = $this->User->getUserLocationInfo($userName);
-                if (!empty($userLocationInfo))
-                {
-                    $this->data['userDetails'] = array_merge($userLocationInfo, $this->data['userDetails']);
-                }
-                $this->data['reviews'] = $this->User->getReviewsByUserId($this->data['userDetails']['user_id']);
-            
-                $this->data['coverImageType'] = 'user';
-                $views = array('content' => 'user_profile');
-                $this->load_structure($views);
+                $this->regular_user($userName);
             }
-            else
+            elseif ($type['user_type'] == 2) 
             {
-                show_404();
+                $this->trainer($userName);
             }
+
         }
         else
         {
@@ -67,13 +60,13 @@ class Main extends MY_Controller
             {
                 $trainerId = $this->Trainer->getTrainerId($this->data['trainerDetails']['user_id']);
 
-               /* $trainerLocationInfo = $this->User->getUserLocationInfo($trainerName);
+               $trainerLocationInfo = $this->User->getUserLocationInfo($trainerName);
                 if (!empty($trainerLocationInfo))
                 {
                     $this->data['trainerDetails'] = array_merge($trainerLocationInfo, $this->data['trainerDetails']);
-                }*/
+                }
                 $trainerId = $trainerId['trainer_id'];
-                $trainerEducation = $this->Trainer->getTrainerEducation($trainerId);
+                $trainerEducationstats = $this->Trainer->getTrainerEducation($trainerId,1);
                 if(!empty($trainerEducation))
                 {
                 if($trainerEducation[0]['type'] == 'association')
@@ -88,11 +81,38 @@ class Main extends MY_Controller
                     $this->data['trainerDetails']['no_of_certification'] = $trainerEducation[1]['count'];
                 } 
                 }
+                $this->data['trainerEducation'] = $this->Trainer->getTrainerEducation($trainerId,0);
 
-                $trainerExperience = $this->Trainer->getTrainerExperience($trainerId);
-                $trainerCategory = $this->Trainer->getTrainerCategory($trainerId);
-                
+                $this->data['trainerExperience'] = $this->Trainer->getTrainerExperience($trainerId);
+                $this->data['trainerCategory'] = $this->Trainer->getTrainerCategory($trainerId);
+                $this->data['trainerReview'] = $this->Trainer->getTrainerReview($trainerId);
 
+            }
+            else
+            {
+                show_404();
+            }
+    }
+
+    public function regular_user($userName)
+    {
+        $this->data['userDetails'] = $this->User->getUserDataByUserName($userName);
+            if (!empty($this->data['userDetails']))
+            {
+                $userLocationInfo = $this->User->getUserLocationInfo($userName);
+                if (!empty($userLocationInfo))
+                {
+                    $this->data['userDetails'] = array_merge($userLocationInfo, $this->data['userDetails']);
+                }
+                $this->data['reviews'] = $this->User->getReviewsByUserId($this->data['userDetails']['user_id']);
+            
+                $this->data['coverImageType'] = 'user';
+                $views = array('content' => 'user_profile');
+                $this->load_structure($views);
+            }
+            else
+            {
+                show_404();
             }
     }
 }
