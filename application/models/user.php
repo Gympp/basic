@@ -56,4 +56,11 @@ class User extends Database
         $reviews = $this->db->get();
         return $this->getResultArray($reviews);
     }
+
+    public function userType($UserName)
+    {
+        $this->db->select('user_type')->from('user')
+             ->where(array('user_username' => $UserName));
+        return $this->db->get()->row_array();
+    }
 }

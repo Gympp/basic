@@ -16,23 +16,14 @@ class Trainer extends Database
         return $this->db->get()->row_array();
     }
 
-    public function getTrainerEducation($trainerId,$flag)
+    public function getTrainerEducation($trainerId)
     {
-        if($flag == 1)
-        {
-    	$this->db->select('trainer_education.type,count(*) as count')->from('trainers')
-             ->join('trainer_education','trainer_education.trainer_id = trainers.trainer_id')
-             ->where(array('trainer_education.trainer_id' => $trainerId))
-             ->group_by('trainer_education.type');
-      }
-      else
-      {
+       
         $this->db->select('*')->from('trainers')
              ->join('trainer_education','trainer_education.trainer_id = trainers.trainer_id')
-             ->where(array('trainer_education.trainer_id' => $trainerId))
-             ->group_by('trainer_education.type');
+             ->where(array('trainer_education.trainer_id' => $trainerId));
+             
 
-      }
         return $this->getResultArray($this->db->get());
     }
     public function getTrainerExperience($trainerId)
