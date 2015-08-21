@@ -19,20 +19,6 @@
             $this->load_structure($views);
         }
 
-        public function _remap($userName)
-        {
-            $this->data['userType'] = $this->User->userType($userName);
-            if(!empty($this->data['userType']) && $this->data['userType']['user_type'] == '1')
-            {
-                $this->users($userName);
-            }
-            elseif ($this->data['userType']['user_type'] == '2') 
-            {
-                $this->trainer($userName);
-            }
-            
-        }
-
         function logout()
         {
             if (session_id()) {
@@ -47,8 +33,9 @@
             $this->data['userDetails'] = array();
             if (!empty($userName))
             {
+               $this->data['userType'] = $this->User->userType($userName);
                $this->data['userDetails'] = $this->User->getUserDataByUserName($userName);
-               if (!empty($this->data['userDetails']))
+               if (!empty($this->data['userDetails']) && $this->data['userType']['user_type'] == '1')
                {
                 $userLocationInfo = $this->User->getUserLocationInfo($userName);
                 if (!empty($userLocationInfo))
@@ -80,17 +67,19 @@
         $certification = 0;
         $association = 0;
         $this->data['trainerDetails'] = array();
-        $this->data['trainerDetails'] = $this->User->getUserDataByUserName($trainerName);
-        if (!empty($this->data['trainerDetails']))
+        if(!empty($trainerName))
         {
-            $trainerId = $this->Trainer->getTrainerId($this->data['trainerDetails']['user_id']);
+            $this->data['trainerDetails'] = $this->User->getUserDataByUserName($trainerName);
+            $this->data['userType'] = $this->User->userType($trainerName);
+            if (!empty($this->data['trainerDetails']) && $this->data['userType']['user_type'] == '2')
+            {
+                $trainerId = $this->data['trainerDetails']['user_id'];
 
                    $trainerLocationInfo = $this->User->getUserLocationInfo($trainerName);
                     if (!empty($trainerLocationInfo))
                     {
                         $this->data['trainerDetails'] = array_merge($trainerLocationInfo, $this->data['trainerDetails']);
                     }
-                    $trainerId = $trainerId['trainer_id'];
                     $trainerEducation = $this->Trainer->getTrainerEducation($trainerId);
                     
                     if(!empty($trainerEducation))
@@ -110,9 +99,9 @@
                         $this->data['trainerDetails']['association'] = $association;
                         $this->data['trainerDetails']['trainerEducation'] = $trainerEducation;
                     }
-                   
+
                     $this->data['trainerExperience'] = $this->Trainer->getTrainerExperience($trainerId);
-                    $this->data['trainerCategory'] = $this->Trainer->getTrainerCategory($trainerId);
+                    $this->data['trainerService'] = $this->Trainer->getTrainerService($trainerId);
                     $this->data['trainerReview'] = $this->Trainer->getTrainerReview($trainerId);
                 }
                 else
@@ -120,5 +109,10 @@
                     show_404();
                 }
             }
-
+            else
+            {
+                show_404();
+            }
         }
+
+    }

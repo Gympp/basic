@@ -9,18 +9,11 @@ class Trainer extends Database
         parent::__construct();
     }
 
-    public function getTrainerId($userId)
-    {
-    	$this->db->select('trainer_id')->from('trainers')
-             ->where(array('user_id' => $userId));
-        return $this->db->get()->row_array();
-    }
-
     public function getTrainerEducation($trainerId)
     {
        
-        $this->db->select('*')->from('trainers')
-             ->join('trainer_education','trainer_education.trainer_id = trainers.trainer_id')
+        $this->db->select('*')->from('user')
+             ->join('trainer_education','trainer_education.trainer_id = user.user_id')
              ->where(array('trainer_education.trainer_id' => $trainerId));
              
 
@@ -36,19 +29,28 @@ class Trainer extends Database
 
     }
 
-    public function getTrainerCategory($trainerId)
+    public function getTrainerService($trainerId)
     {
-         $this->db->select('*')->from('trainer_category')
-             ->join('categories','categories.category_id = trainer_category.category_id')
-             ->where(array('trainer_category.trainer_id' => $trainerId));
+        
+        $this->db->select('*')->from('trainer_details')
+             ->where(array('trainer_id' => $trainerId));
+   
+        $services = $this->db->get()->row_array();
+ 
+        if(!empty($services['services']))
+        {
+               $this->db->select('*')->from('service')
+                   ->where_in(array('id' => implode(',', (array)$services['services'])));
+        }
 
               return $this->getResultArray($this->db->get());
     }
 
     public function getTrainerReview($trainerId)
     {
-        $this->db->select('*')->from('trainer_review')
-             ->where(array('trainer_id' => $trainerId));
+        $this->db->select('*')->from('review')
+             ->where(array('type_id' => $trainerId))
+             ->where(array('type' => '2'));
 
         return $this->getResultArray($this->db->get());
 
