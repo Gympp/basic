@@ -6,10 +6,10 @@
         {
             parent::__construct();
             $this->load->model('user', 'User');
-            $this->load->model('location', 'Location');
+           // $this->load->model('location', 'Location');
             $this->load->model('trainer', 'Trainer');
-            $this->output->enable_profiler(true);
-            $this->data['active_main_locations'] = $this->Location->getAllLocations();
+            //$this->output->enable_profiler(true);
+           // $this->data['active_main_locations'] = $this->Location->getAllLocations();
         }
         
         public function index ()
@@ -99,10 +99,26 @@
                         $this->data['trainerDetails']['association'] = $association;
                         $this->data['trainerDetails']['trainerEducation'] = $trainerEducation;
                     }
+                    $trainer = $this->Trainer->getTrainerDetails($trainerId);
 
+                    $this->data['trainerDetails']['age'] = $trainer['0']['age'];
+                    $this->data['trainerDetails']['experience'] = $trainer['0']['experience'];
+                    $this->data['trainerDetails']['dob'] = $trainer['0']['dob'];
                     $this->data['trainerExperience'] = $this->Trainer->getTrainerExperience($trainerId);
                     $this->data['trainerService'] = $this->Trainer->getTrainerService($trainerId);
                     $this->data['trainerReview'] = $this->Trainer->getTrainerReview($trainerId);
+                    $this->data['trainerDetails']['average_rating'] = 0;
+                    if(!empty($this->data['trainerReview']))
+                    {
+                        foreach($this->data['trainerReview'] as $review)
+                        {
+                              $rating[] = $review['review_internal_rating'];
+                        }
+                        $this->data['trainerDetails']['average_rating'] = array_sum($rating)/count($rating);
+                    }
+                    $this->data['trainerDetails']['average_rating'] = array_sum($rating)/count($rating);
+                    $views = array('content' => 'trainer_profile');
+                    $this->load_structure($views);
                 }
                 else
                 {

@@ -49,11 +49,20 @@ class Trainer extends Database
     public function getTrainerReview($trainerId)
     {
         $this->db->select('*')->from('review')
+             ->join('user','user.user_id = review.user_id')
              ->where(array('type_id' => $trainerId))
              ->where(array('type' => '2'));
 
         return $this->getResultArray($this->db->get());
 
+    }
+
+    public function getTrainerDetails($trainerId)
+    {
+        $this->db->select('age,experience,dob')->from('trainer_details')
+             ->where(array('trainer_id' => $trainerId));
+
+              return $this->getResultArray($this->db->get());
     }
 
 }
