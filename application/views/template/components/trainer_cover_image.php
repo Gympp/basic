@@ -64,7 +64,7 @@
 					<ul class="fa-trainer-ul">
 					    <?php foreach($trainerExperience as $experience) {?>
 						<li> <i class="fa-trainer-li fa fa-building fa-prod-details-bullet"></i> 
-							<a href="mailto:<?php echo $trainerDetails['user_email'];?>" data-toggle="tooltip" data-placement="bottom" title="Click to find other fitness trainers in <?php echo $experience['address1'],', ',$experience['city'];?>, India"><?php echo $experience['name'],', ',$experience['address1'],' (',$experience['city'],', IN)';?></a>
+							<a href="mailto:<?php echo $trainerDetails['user_email'];?>" data-toggle="tooltip" data-placement="bottom" title="Click to find other fitness trainers in <?php echo $experience['address1'],', ',$experience['city'];?>, India"><?php echo $experience['product_name'],', ',$experience['area_name'],' (',$experience['city'],', IN)';?></a>
 							<br>
 							<span><?php echo $experience['description'];?></span>
 						</li>

@@ -22,8 +22,7 @@ class Trainer extends Database
     public function getTrainerExperience($trainerId)
     {
         $this->db->select('*')->from('trainer_experience')
-             ->join('gym','gym.gym_id = trainer_experience.gym_id')
-             ->where(array('trainer_experience.trainer_id' => $trainerId));
+             ->where(array('trainer_id' => $trainerId));
        
         return $this->getResultArray($this->db->get());
 
@@ -33,15 +32,17 @@ class Trainer extends Database
     {
         
         $this->db->select('*')->from('trainer_details')
+             ->join('location','location.city_id = trainer_details.city_id')
+             ->join('service','trainer_details.service_id = service.id')
              ->where(array('trainer_id' => $trainerId));
    
-        $services = $this->db->get()->row_array();
+       /* $services = $this->db->get()->row_array();
  
         if(!empty($services['services']))
         {
                $this->db->select('*')->from('service')
                    ->where_in(array('id' => implode(',', (array)$services['services'])));
-        }
+        }*/
 
               return $this->getResultArray($this->db->get());
     }
